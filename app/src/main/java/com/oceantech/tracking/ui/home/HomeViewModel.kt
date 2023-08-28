@@ -28,6 +28,9 @@ class HomeViewModel @AssistedInject constructor(
     }
 
     private fun handleCheckIn(ip:String) {
+        setState {
+            this.copy(timeSheet = Loading())
+        }
         timeSheetRepository.checkIn(ip).execute {
             copy(timeSheet= it)
         }
@@ -42,6 +45,11 @@ class HomeViewModel @AssistedInject constructor(
         }
     }
 
+    fun removeTimeSheet(){
+        setState {
+            this.copy(timeSheet = Uninitialized)
+        }
+    }
     private fun handResetLang() {
         _viewEvents.post(HomeViewEvent.ResetLanguege)
     }

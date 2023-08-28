@@ -110,4 +110,5 @@
     <string name="no_checkin">No checkin</string>
     <string name="calendar_lable">Calendar</string>
     <string name="checkin_status">Status: present</string>
+    <string name="signup_success">Signup successfully</string>
 </resources>

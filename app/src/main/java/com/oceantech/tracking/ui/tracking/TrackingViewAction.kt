@@ -4,6 +4,7 @@ import com.oceantech.tracking.core.NimpeViewModelAction
 import com.oceantech.tracking.data.model.Tracking
 
 sealed class TrackingViewAction : NimpeViewModelAction{
+    object GetCurrentUser: TrackingViewAction()
     object GetAllTrackingByUser: TrackingViewAction()
     object ResetLang: TrackingViewAction()
     object NavigateToAddDialog : TrackingViewAction()

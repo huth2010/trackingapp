@@ -21,6 +21,7 @@ import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.model.TimeSheet
 import com.oceantech.tracking.data.network.UserApi
 import com.oceantech.tracking.databinding.FragmentHomeBinding
+import java.net.NetworkInterface
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -48,7 +49,7 @@ class HomeFragment @Inject constructor(val api: UserApi) :
         }
         setupUi()
         views.btnSave.setOnClickListener {
-            viewModel.handle(HomeViewAction.CheckIn(Random().nextInt().toString()))
+            viewModel.handle(HomeViewAction.CheckIn(getIPAddress()))
         }
         views.btnCalendarBack.setOnClickListener {
             views.compactcalendarView.scrollLeft()
@@ -140,6 +141,7 @@ class HomeFragment @Inject constructor(val api: UserApi) :
             is Success -> {
                 Toast.makeText(requireContext(), it.timeSheet.invoke().message, Toast.LENGTH_SHORT)
                     .show()
+                viewModel.removeTimeSheet()
                 viewModel.handle(HomeViewAction.GetAllTimeSheet)
             }
 
@@ -148,6 +150,20 @@ class HomeFragment @Inject constructor(val api: UserApi) :
             }
         }
 
+    }
+    private fun getIPAddress(): String {
+        val interfaces = NetworkInterface.getNetworkInterfaces()
+        while (interfaces.hasMoreElements()) {
+            val networkInterface = interfaces.nextElement()
+            val addresses = networkInterface.inetAddresses
+            while (addresses.hasMoreElements()) {
+                val address = addresses.nextElement()
+                if (!address.isLoopbackAddress && address.hostAddress.contains(":").not()) {
+                    return address.hostAddress
+                }
+            }
+        }
+        return ""
     }
 
     private fun setTrackedDates(trackedDays: List<Long>) {

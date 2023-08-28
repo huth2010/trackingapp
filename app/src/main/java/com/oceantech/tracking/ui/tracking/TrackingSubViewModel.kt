@@ -11,6 +11,7 @@
     import com.oceantech.tracking.core.TrackingViewModel
     import com.oceantech.tracking.data.model.Tracking
     import com.oceantech.tracking.data.repository.TrackingRepository
+    import com.oceantech.tracking.data.repository.UserRepository
     import dagger.assisted.Assisted
     import dagger.assisted.AssistedFactory
     import dagger.assisted.AssistedInject
@@ -21,7 +22,8 @@
 
     class TrackingSubViewModel @AssistedInject constructor(
         @Assisted val state: TrackingViewState,
-        val repository: TrackingRepository
+        val trackingRepository: TrackingRepository,
+        val userRepository: UserRepository
     ) : TrackingViewModel<TrackingViewState, TrackingViewAction, TrackingViewEvent>(state) {
         var language: Int = 1
 
@@ -33,6 +35,16 @@
                 is TrackingViewAction.PostNewTracking -> handlePostNewTracking(action.tracking)
                 is TrackingViewAction.UpdateTracking -> handleUpdateTracking(action.id,action.tracking)
                 is TrackingViewAction.DeleteTracking -> handleDeleteTracking(action.id)
+                is TrackingViewAction.GetCurrentUser -> handleGetCurrentUser();
+            }
+        }
+
+        private fun handleGetCurrentUser() {
+            setState {
+                this.copy(asyncCurrentUser=Loading())
+            }
+            userRepository.getCurrentUser().execute {
+                copy(asyncCurrentUser=it)
             }
         }
 
@@ -40,7 +52,7 @@
         setState {
             this.copy(asyncDeleteTracking=Loading())
         }
-            repository.deleteTracking(id).execute {
+            trackingRepository.deleteTracking(id).execute {
                 copy(asyncDeleteTracking=it)
             }
         }
@@ -49,7 +61,7 @@
         setState {
             this.copy(asyncUpdateTracking = Loading())
         }
-            repository.updateTracking(id,tracking).execute {
+            trackingRepository.updateTracking(id,tracking).execute {
                 copy(asyncUpdateTracking=it)
             }
         }
@@ -58,7 +70,7 @@
             setState {
                 this.copy(asyncSaveTracking = Loading())
             }
-           repository.postNewTracking(tracking).execute {
+           trackingRepository.postNewTracking(tracking).execute {
                copy(asyncSaveTracking=it)
            }
 
@@ -75,7 +87,7 @@
             setState {
                 copy(asyncTrackingArray = Loading())
             }
-            repository.getAllTrackingByUser().execute {
+            trackingRepository.getAllTrackingByUser().execute {
                 copy(asyncTrackingArray = it)
             }
         }

@@ -25,7 +25,7 @@
     <string name="feedback_hint">Ý kiến phản hồi của bạn ...</string>
     <string name="fragment_news">Tin tức</string>
     <string name="send_feedback">Gửi phản hồi</string>
-    <string name="warning">Cảnh báo bệnh truyền nhiễm</string>
+    <string name="warning">Đăng nhập tài khoản Oceantech</string>
     <string name="loggin">Đăng nhập</string>
     <string name="lable_signing">Chưa có tài khoản /<font color="#3F51B5"><b> Đăng kí</b></font></string>
     <string name="forget_password">Quên mật khẩu</string>
@@ -111,5 +111,6 @@
     <string name="no_checkin">Không điểm danh</string>
     <string name="calendar_lable">Lịch</string>
     <string name="checkin_status">Trạng thái: có mặt</string>
+    <string name="signup_success">Đăng ký thành công</string>
 
 </resources>

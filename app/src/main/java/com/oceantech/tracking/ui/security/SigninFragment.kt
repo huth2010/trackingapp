@@ -104,7 +104,7 @@ class SigninFragment : TrackingBaseFragment<FragmentSigninBinding>() {
             is Success -> {
                 Toast.makeText(
                     requireContext(),
-                    getString(R.string.login_success),
+                    getString(R.string.signup_success),
                     Toast.LENGTH_LONG
                 ).show()
                 Log.d("huth", "invalidate: ${it.userCurrent.invoke().toString()}")

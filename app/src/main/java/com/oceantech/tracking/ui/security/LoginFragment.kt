@@ -15,6 +15,7 @@ import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.network.SessionManager
 import com.oceantech.tracking.databinding.FragmentLoginBinding
 import com.oceantech.tracking.ui.MainActivity
+import com.oceantech.tracking.utils.handleLogOut
 import javax.inject.Inject
 
 class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBinding>() {
@@ -80,6 +81,9 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
                 activity?.finish()
             }
             is Fail -> {
+                if(it.asyncLogin.invoke().toString().isNotEmpty()){
+                    requireActivity().handleLogOut()
+                }
                 views.passwordTil.error = getString(R.string.login_fail)
             }
         }

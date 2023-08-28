@@ -114,7 +114,12 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
         navController = findNavController(R.id.nav_host_fragment_content_main)
 
         appBarConfiguration = AppBarConfiguration(
-                navController.graph
+                setOf(
+                    R.id.nav_HomeFragment,
+                    R.id.nav_usersFragment,
+                    R.id.nav_trackingFragment,
+                    R.id.nav_fofileFragment
+                )
             , drawerLayout
         )
 
@@ -229,11 +234,6 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
 
     fun navigateTo(fragmentId: Int) {
         navController.navigate(fragmentId)
@@ -247,11 +247,6 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
                 } else {
                     drawerLayout.openDrawer(GravityCompat.START)
                 }
-                return true
-            }
-
-            R.id.menu_list_health -> {
-
                 return true
             }
 

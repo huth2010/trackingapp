@@ -1,6 +1,7 @@
 package com.oceantech.tracking.ui.tracking
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,13 +23,13 @@ import com.oceantech.tracking.ui.tracking.adapter.TrackingAdapter
 class TrackingFragment : TrackingBaseFragment<FragmentTrackingBinding>() {
     val viewModel: TrackingSubViewModel by activityViewModel()
     lateinit var adapter: TrackingAdapter
-    lateinit var mList: List<TrackingAdapter>
-    var mUser: User? = null
+    private var mUser: User? = null
     var state: Int = 0
 
     companion object {
-        private const val GET_ALL = 1
-        private const val SAVE = 2
+        private const val GET_CURUSER= 1
+        private const val GET_ALL = 2
+        private const val SAVE = 3
     }
 
     override fun getBinding(
@@ -39,9 +40,9 @@ class TrackingFragment : TrackingBaseFragment<FragmentTrackingBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.handle(TrackingViewAction.GetCurrentUser)
+        state= GET_CURUSER
         setupUi();
-        viewModel.handle(TrackingViewAction.GetAllTrackingByUser)
-        state = GET_ALL
         viewModel.observeViewEvents {
             handleEvent(it)
         }
@@ -56,7 +57,6 @@ class TrackingFragment : TrackingBaseFragment<FragmentTrackingBinding>() {
     }
 
     private fun setupUi() {
-        mList = listOf()
 
         adapter = TrackingAdapter {
             val action =
@@ -64,7 +64,8 @@ class TrackingFragment : TrackingBaseFragment<FragmentTrackingBinding>() {
             findNavController().navigate(action)
         }
         views.rcyTracking.adapter = adapter
-
+        viewModel.handle(TrackingViewAction.GetAllTrackingByUser)
+        state = GET_ALL
     }
 
     private fun handleEvent(it: TrackingViewEvent) {
@@ -74,9 +75,15 @@ class TrackingFragment : TrackingBaseFragment<FragmentTrackingBinding>() {
             }
 
             is TrackingViewEvent.NavigateToAddDialog -> {
-                val action =
-                    TrackingFragmentDirections.actionNavTrackingFragmentToAddTrackingFragment(mUser!!)
-                findNavController().navigate(action)
+                    withState(viewModel){
+                        it.asyncCurrentUser.invoke().let {
+                            if (it!=null){
+                            val action =
+                                TrackingFragmentDirections.actionNavTrackingFragmentToAddTrackingFragment(it)
+                            findNavController().navigate(action)
+                        }
+                    }
+                }
             }
         }
     }
@@ -86,9 +93,6 @@ class TrackingFragment : TrackingBaseFragment<FragmentTrackingBinding>() {
             is Success -> {
                 it.asyncTrackingArray.invoke().let {
                     adapter.setData(it)
-                    if (it.isNotEmpty()){
-                        mUser = it[0].user
-                    }
                 }
             }
 
@@ -121,13 +125,29 @@ class TrackingFragment : TrackingBaseFragment<FragmentTrackingBinding>() {
             }
         }
     }
+    private fun handleStateGetCurrentUser(it: TrackingViewState) {
+        when (it.asyncCurrentUser) {
+            is Success -> {
+                it.asyncCurrentUser.invoke().let {
+                    Log.d("user", "handleStateGetCurrentUser: ${mUser}")
+                    mUser=it
+                }
+            }
 
+            is Fail -> {
+
+            }
+        }
+    }
     override fun invalidate(): Unit = withState(viewModel) {
         when (state) {
+            GET_CURUSER -> handleStateGetCurrentUser(it)
             GET_ALL -> handleStateGetALl(it)
             SAVE -> handleStateSaved(it)
         }
     }
+
+
 
 
 }
